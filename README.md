@@ -26,7 +26,7 @@ A watcher enables you to monitor, manage, create and simulate watches for your E
 #### CPU Alerts
 - **Check Interval:** 5 minutes
 - **Indice:** metricbeat-*
-- **Trigger:** *system.cpu.idle.pct *less than 1.0
+- **Trigger:** *system.cpu.idle.pct* less than 1.0
 
 #### Disk  Usage Alerts
 - **Check Interval:** 5 minutes
