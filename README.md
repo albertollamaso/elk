@@ -1,17 +1,17 @@
+
 # Elasticsearch stack scripts and snippets
 
 
 - ## Slack integration
 In order to be able to send alerts to slack from the watcher you need to configure a Slack webhook in the elasticsearch.yml file of your ES cluster:
 
-````
+```
  xpack.notification.slack:
    account:
      monitoring:
        url: https://hooks.slack.com/services/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K
 ```
-	   
-	   
+
 
 - ## Watcher
 
@@ -55,3 +55,5 @@ A watcher enables you to monitor, manage, create and simulate watches for your E
 
 https://www.elastic.co/guide/en/beats/metricbeat/current/running-on-kubernetes.html
 #### Visualization
+
+![K8s Node CPU](https://github.com/albertollamaso/elk/blob/master/images/nodescpu.png)
