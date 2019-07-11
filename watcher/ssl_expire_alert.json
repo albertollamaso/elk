@@ -1,0 +1,77 @@
+{
+	"trigger": {
+		"schedule": {
+			"interval": "7d"
+		}
+	},
+	"input": {
+		"search": {
+			"request": {
+				"search_type": "query_then_fetch",
+				"indices": [
+					"heartbeat-*"
+				],
+				"types": [],
+				"body": {
+					"size": 100,
+					"query": {
+						"bool": {
+							"must": [
+								{
+									"match": {
+										"monitor.scheme": "https"
+									}
+								},
+								{
+									"range": {
+										"tls.certificate_not_valid_after": {
+											"lte": "now+30d"
+										}
+									}
+								}
+							],
+							"filter": {
+								"range": {
+									"@timestamp": {
+										"from": "now-5m",
+										"to": "now"
+									}
+								}
+							}
+						}
+					},
+					"docvalue_fields": [
+						{
+							"field": "tls.certificate_not_valid_after",
+							"format": "yyyy-MM-dd"
+						}
+					]
+				}
+			}
+		}
+	},
+	"condition": {
+		"script": {
+			"source": "if (ctx.payload.hits.hits.0._source.resolve.host == '46a20310c4fa4c7589e2177bbf41da45.us-east-1.aws.found.io') return false; else if (ctx.payload.hits.total >= 1) return true;",
+			"lang": "painless"
+		}
+	},
+	"actions": {
+		"notify-slack": {
+			"transform": {
+				"script": {
+					"source": "def payload = ctx.payload ; payload.epochtime = ctx.payload.hits.hits.0.fields['tls.certificate_not_valid_after'][0] ; payload.customurl = ctx.payload.hits.hits.0._source.resolve.host ; return payload;",
+					"lang": "painless"
+				}
+			},
+			"slack": {
+				"message": {
+					"to": [
+						"#it"
+					],
+					"text": "SSL certificate for domain {{ctx.payload.customurl}} will expire on {{ctx.payload.epochtime}} "
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,69 @@
+{
+	"trigger": {
+		"schedule": {
+			"interval": "3m"
+		}
+	},
+	"input": {
+		"search": {
+			"request": {
+				"search_type": "query_then_fetch",
+				"indices": [
+					"heartbeat-*"
+				],
+				"types": [],
+				"body": {
+					"size": 10,
+					"query": {
+						"bool": {
+							"must": {
+								"match": {
+									"monitor.status": "down"
+								}
+							},
+							"filter": {
+								"range": {
+									"@timestamp": {
+										"from": "now-3m",
+										"to": "now"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"condition": {
+		"compare": {
+			"ctx.payload.hits.total": {
+				"gte": 1
+			}
+		}
+	},
+	"actions": {
+		"notify-slack": {
+			"slack": {
+				"message": {
+					"to": [
+						"#it_alerts"
+					],
+					"text": "Your Site: {{ctx.payload.hits.hits.0._source.http.url}} Is Currently Down \n Error: {{ctx.payload.hits.hits.0._source.error.message}} \n"
+				}
+			}
+		},
+		"send_email": {
+			"email": {
+				"profile": "standard",
+				"to": [
+					"hostmaster@humancaresystems.com"
+				],
+				"subject": "Your Site: {{ctx.payload.hits.hits.0._source.http.url}} Is Currently Down",
+				"body": {
+					"text": "Site: {{ctx.payload.hits.hits.0._source.http.url}} \n Error: {{ctx.payload.hits.hits.0._source.error.message}} \n"
+				}
+			}
+		}
+	}
+}

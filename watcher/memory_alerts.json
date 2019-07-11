@@ -1,0 +1,72 @@
+{
+	"trigger": {
+		"schedule": {
+			"interval": "5m"
+		}
+	},
+	"input": {
+		"search": {
+			"request": {
+				"search_type": "query_then_fetch",
+				"indices": [
+					"metricbeat-*"
+				],
+				"types": [],
+				"body": {
+					"size": 100,
+					"query": {
+						"bool": {
+							"must": [
+								{
+									"match": {
+										"metricset.name": "memory"
+									}
+								},
+								{
+									"range": {
+										"system.memory.used.pct": {
+											"gte": 0.90
+										}
+									}
+								}
+							],
+							"filter": {
+								"range": {
+									"@timestamp": {
+										"from": "now-5m",
+										"to": "now"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"condition": {
+		"compare": {
+			"ctx.payload.hits.total": {
+				"gte": 1
+			}
+		}
+	},
+	"actions": {
+		"notify-slack": {
+			"transform": {
+				"script": {
+					"source": "return [ 'memory' : ctx.payload.hits.hits.0._source.system.memory.used.pct*100, 'server' : ctx.payload.hits.hits.0._source.beat.name ]",
+					"lang": "painless"
+				}
+			},
+			"slack": {
+				"message": {
+					"to": [
+						"#it_alerts"
+					],
+					"text": "Server: {{ctx.payload.server}}, has reported a MEMORY usage of {{ctx.payload.memory}}%  for the last 5 minutes. Please check it out. "
+				}
+			}
+		}
+	}
+}

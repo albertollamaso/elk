@@ -1,0 +1,73 @@
+{
+	"trigger": {
+		"schedule": {
+			"interval": "5m"
+		}
+	},
+	"input": {
+		"search": {
+			"request": {
+				"search_type": "query_then_fetch",
+				"indices": [
+					"metricbeat-*"
+				],
+				"types": [],
+				"body": {
+					"size": 1000,
+					"query": {
+						"bool": {
+							"must": [
+								{
+									"match": {
+										"metricset.name": "filesystem"
+									}
+								},
+								{
+									"range": {
+										"system.filesystem.used.pct": {
+											"gte": 0.98,
+											"lt": 1
+										}
+									}
+								}
+							],
+							"filter": {
+								"range": {
+									"@timestamp": {
+										"from": "now-5m",
+										"to": "now"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"condition": {
+		"compare": {
+			"ctx.payload.hits.total": {
+				"gte": 1
+			}
+		}
+	},
+	"actions": {
+		"notify-slack": {
+			"transform": {
+				"script": {
+					"source": "return [ 'hdused' : ctx.payload.hits.hits.0._source.system.filesystem.used.pct*100, 'server' : ctx.payload.hits.hits.0._source.beat.name , 'drivename' : ctx.payload.hits.hits.0._source.system.filesystem.device_name , 'mountpoint' : ctx.payload.hits.hits.0._source.system.filesystem.mount_point ] ",
+					"lang": "painless"
+				}
+			},
+			"slack": {
+				"message": {
+					"to": [
+						"#it_alerts"
+					],
+					"text": "Server: {{ctx.payload.server}}, has reported {{ctx.payload.hdused}}% of used space in drive: {{ctx.payload.drivename}} mount point: {{ctx.payload.mountpoint}}   for the last 5 minutes. Please check it out. "
+				}
+			}
+		}
+	}
+}
