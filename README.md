@@ -46,7 +46,7 @@ A watcher enables you to monitor, manage, create and simulate watches for your E
 #### Website Uptime Alerts
 - **Check Interval:** 3 minutes
 - **Indice:** heartbeat-*
-- **Trigger:**  *monitor.status* is down
+- **Trigger:**  *monitor.status* is **down**
 
 
 - ## Kubernetes Logs and Monitoring
@@ -56,4 +56,8 @@ A watcher enables you to monitor, manage, create and simulate watches for your E
 https://www.elastic.co/guide/en/beats/metricbeat/current/running-on-kubernetes.html
 #### Visualization
 
-![K8s Node CPU](https://github.com/albertollamaso/elk/blob/master/images/nodescpu.png)
+![K8s Nodes CPU](https://github.com/albertollamaso/elk/blob/master/images/nodescpu.png)
+![K8s Nodes Memory](https://github.com/albertollamaso/elk/blob/master/images/nodesmemory.png)
+![K8s Pods CPU](https://github.com/albertollamaso/elk/blob/master/images/podscpu.png)
+![K8s Pods Memory](https://github.com/albertollamaso/elk/blob/master/images/podsmemory.png)
+![K8s Resource Usage Table](https://github.com/albertollamaso/elk/blob/master/images/resourceusage.png)
