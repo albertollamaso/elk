@@ -48,6 +48,15 @@ A watcher enables you to monitor, manage, create and simulate watches for your E
 - **Indice:** heartbeat-*
 - **Trigger:**  *monitor.status* is **down**
 
+- ## Curator
+*Source:* https://github.com/elastic/curator
+
+Have indices in Elasticsearch? This is the tool for you!
+
+Like a museum curator manages the exhibits and collections on display, Elasticsearch Curator helps you curate, or manage your indices.
+
+*Example Usage:* curator --config ~/.curator/curator.yml delete_indices.yml
+
 
 - ## Kubernetes Logs and Monitoring
 
